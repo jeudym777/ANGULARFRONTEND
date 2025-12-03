@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Empleado } from '../../models/empleado.interface';
 import { MESSAGES } from '../../constants/app.constants';
@@ -8,6 +8,7 @@ import { MESSAGES } from '../../constants/app.constants';
   imports: [CommonModule],
   templateUrl: './empleado-tabla.html',
   styleUrl: './empleado-tabla.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmpleadoTabla {
   @Input() empleados: Empleado[] = [];

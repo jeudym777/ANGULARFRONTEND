@@ -19,9 +19,9 @@ export const APP_CONSTANTS = {
  */
 export const MESSAGES = {
   SUCCESS: {
-    CREATE: (nombre: string) => `¡Empleado "${nombre}" creado con éxito!`,
-    UPDATE: '¡Empleado actualizado con éxito!',
-    DELETE: '¡Empleado eliminado correctamente!',
+    CREATE: (nombre: string) => `Empleado "${nombre}" creado con éxito!`,
+    UPDATE: 'Empleado actualizado con éxito!',
+    DELETE: 'Empleado eliminado correctamente!',
   },
   ERROR: {
     LOAD: 'Error al cargar empleados',

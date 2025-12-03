@@ -41,13 +41,17 @@ export class EmpleadosCrud implements OnInit {
     this.cargando = true;
     this.empleadoService.getEmpleados().subscribe({
       next: (empleados) => {
-        this.empleados = empleados;
+        // Crear nueva referencia del array para que Angular detecte el cambio
+        this.empleados = [...empleados];
         this.cargando = false;
+        // Forzar detección de cambios para actualizar la tabla
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.alertComponent?.show(MESSAGES.ERROR.LOAD, 'error');
         console.error('Error al cargar empleados:', error);
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -69,28 +73,33 @@ export class EmpleadosCrud implements OnInit {
   private crearEmpleado(data: CreateEmpleadoDTO): void {
     console.log('Datos originales del formulario:', data);
 
-    // Intentar simular exactamente lo que funciona en PUT
-    const createDTO = {
-      nombre: data.nombre?.toString().trim() || '',
-      codEmpleado: data.codEmpleado?.toString().trim() || '',
-      email: data.email?.toString().trim() || '',
-      edad: Number(data.edad) || 0
-      // Backend genera fechaAlta automáticamente
+    // Limpiar y validar los datos antes de enviar
+    const createDTO: CreateEmpleadoDTO = {
+      nombre: (data.nombre || '').toString().trim(),
+      codEmpleado: (data.codEmpleado || '').toString().trim().toUpperCase(),
+      email: (data.email || '').toString().trim().toLowerCase(),
+      edad: parseInt(data.edad?.toString() || '0', 10)
     };
 
     console.log('DTO final a enviar:', JSON.stringify(createDTO, null, 2));
 
-    this.empleadoService.createEmpleado(createDTO as CreateEmpleadoDTO).subscribe({
+    // Validar que los datos no estén vacíos
+    if (!createDTO.nombre || !createDTO.codEmpleado || !createDTO.email || createDTO.edad <= 0) {
+      this.alertComponent.show('Por favor completa todos los campos correctamente', 'error');
+      return;
+    }
+
+    this.empleadoService.createEmpleado(createDTO).subscribe({
       next: (empleado) => {
         console.log('¡Empleado creado exitosamente!:', empleado);
         this.alertComponent.show(MESSAGES.SUCCESS.CREATE(data.nombre), 'success');
-        // Diferir el reset para evitar NG0100
-        setTimeout(() => {
-          this.formComponent.resetForm();
-          this.cargarEmpleados();
-          // Forzar detección tras actualizar estado UI
-          this.cdr.detectChanges();
-        }, 0);
+
+        // Reset inmediato sin setTimeout para evitar NG0100
+        this.formComponent.resetForm();
+        this.cargarEmpleados();
+
+        // Forzar detección después de los cambios
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error completo:', error);
@@ -124,6 +133,7 @@ export class EmpleadosCrud implements OnInit {
       error: (error) => {
         this.alertComponent.show(MESSAGES.ERROR.UPDATE, 'error');
         console.error('Error al actualizar empleado:', error);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -133,6 +143,9 @@ export class EmpleadosCrud implements OnInit {
    */
   editarEmpleado(id: number): void {
     this.empleadoEditando = this.empleados.find(e => e.id === id) || null;
+
+    // Forzar detección de cambios para actualizar el formulario
+    this.cdr.detectChanges();
 
     // Scroll al formulario
     setTimeout(() => {
@@ -169,6 +182,7 @@ export class EmpleadosCrud implements OnInit {
         this.alertComponent.show(MESSAGES.ERROR.DELETE, 'error');
         console.error('Error al eliminar empleado:', error);
         this.empleadoAEliminar = null;
+        this.cdr.detectChanges();
       }
     });
   }

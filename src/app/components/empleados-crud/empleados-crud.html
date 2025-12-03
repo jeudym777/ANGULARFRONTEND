@@ -22,6 +22,15 @@
       (onEdit)="editarEmpleado($event)"
       (onDelete)="eliminarEmpleado($event)">
     </app-empleado-tabla>
+
+    <div class="refresh-section">
+      <button
+        class="btn btn-primary"
+        (click)="cargarEmpleados()"
+        [disabled]="cargando">
+        🔄 Actualizar Lista
+      </button>
+    </div>
   }
 
   <app-confirm-modal
