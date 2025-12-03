@@ -1,28 +1,34 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Empleado, CreateEmpleadoDTO, UpdateEmpleadoDTO } from '../../models/empleado.interface';
 import { EmpleadoService } from '../../services/empleado.service';
 import { EmpleadoTabla } from '../empleado-tabla/empleado-tabla';
 import { EmpleadoForm } from '../empleado-form/empleado-form';
 import { Alert } from '../alert/alert';
+import { ConfirmModal } from '../confirm-modal/confirm-modal';
 import { MESSAGES } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-empleados-crud',
-  imports: [CommonModule, EmpleadoTabla, EmpleadoForm, Alert],
+  imports: [CommonModule, EmpleadoTabla, EmpleadoForm, Alert, ConfirmModal],
   templateUrl: './empleados-crud.html',
   styleUrl: './empleados-crud.css',
 })
 export class EmpleadosCrud implements OnInit {
   @ViewChild(Alert) alertComponent!: Alert;
   @ViewChild(EmpleadoForm) formComponent!: EmpleadoForm;
+  @ViewChild(ConfirmModal) confirmModal!: ConfirmModal;
 
   empleados: Empleado[] = [];
   empleadoEditando: Empleado | null = null;
   cargando = false;
+  empleadoAEliminar: string | null = null;
   readonly MESSAGES = MESSAGES;
 
-  constructor(private empleadoService: EmpleadoService) {}
+  constructor(
+    private empleadoService: EmpleadoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarEmpleados();
@@ -61,36 +67,59 @@ export class EmpleadosCrud implements OnInit {
    * Crea un nuevo empleado
    */
   private crearEmpleado(data: CreateEmpleadoDTO): void {
-    this.empleadoService.createEmpleado(data).subscribe({
+    console.log('Datos originales del formulario:', data);
+
+    // Intentar simular exactamente lo que funciona en PUT
+    const createDTO = {
+      nombre: data.nombre?.toString().trim() || '',
+      codEmpleado: data.codEmpleado?.toString().trim() || '',
+      email: data.email?.toString().trim() || '',
+      edad: Number(data.edad) || 0
+      // Backend genera fechaAlta automáticamente
+    };
+
+    console.log('DTO final a enviar:', JSON.stringify(createDTO, null, 2));
+
+    this.empleadoService.createEmpleado(createDTO as CreateEmpleadoDTO).subscribe({
       next: (empleado) => {
+        console.log('¡Empleado creado exitosamente!:', empleado);
         this.alertComponent.show(MESSAGES.SUCCESS.CREATE(data.nombre), 'success');
-        this.formComponent.resetForm();
-        this.cargarEmpleados();
+        // Diferir el reset para evitar NG0100
+        setTimeout(() => {
+          this.formComponent.resetForm();
+          this.cargarEmpleados();
+          // Forzar detección tras actualizar estado UI
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (error) => {
+        console.error('Error completo:', error);
+        console.error('Status:', error.status);
+        console.error('Error body:', error.error);
         this.alertComponent.show(MESSAGES.ERROR.CREATE, 'error');
-        console.error('Error al crear empleado:', error);
       }
     });
-  }
-
-  /**
+  }  /**
    * Actualiza un empleado existente
    */
   private actualizarEmpleado(data: UpdateEmpleadoDTO): void {
     if (!this.empleadoEditando) return;
 
+    const empleadoId = this.empleadoEditando.id;
+    const empleadoCodigo = this.empleadoEditando.codEmpleado;
+
     // Usar el código del empleado en edición
     const updateDTO: UpdateEmpleadoDTO = {
       ...data,
-      codEmpleado: this.empleadoEditando.codEmpleado
+      codEmpleado: empleadoCodigo
+      // Backend mantiene fechaAlta original
     };
 
-    this.empleadoService.updateEmpleado(this.empleadoEditando.id, updateDTO).subscribe({
+    this.empleadoService.updateEmpleado(empleadoId, updateDTO).subscribe({
       next: () => {
         this.alertComponent.show(MESSAGES.SUCCESS.UPDATE, 'success');
-        this.cancelarEdicion();
         this.cargarEmpleados();
+        this.cancelarEdicion();
       },
       error: (error) => {
         this.alertComponent.show(MESSAGES.ERROR.UPDATE, 'error');
@@ -115,18 +144,40 @@ export class EmpleadosCrud implements OnInit {
    * Elimina un empleado
    */
   eliminarEmpleado(codigo: string): void {
-    if (confirm(MESSAGES.CONFIRM.DELETE_MESSAGE)) {
-      this.empleadoService.deleteEmpleado(codigo).subscribe({
-        next: () => {
-          this.alertComponent.show(MESSAGES.SUCCESS.DELETE, 'success');
-          this.cargarEmpleados();
-        },
-        error: (error) => {
-          this.alertComponent.show(MESSAGES.ERROR.DELETE, 'error');
-          console.error('Error al eliminar empleado:', error);
-        }
-      });
-    }
+    this.empleadoAEliminar = codigo;
+    this.confirmModal.show({
+      title: MESSAGES.CONFIRM.DELETE_TITLE,
+      message: MESSAGES.CONFIRM.DELETE_MESSAGE,
+      confirmText: MESSAGES.CONFIRM.DELETE_CONFIRM,
+      cancelText: MESSAGES.CONFIRM.DELETE_CANCEL
+    });
+  }
+
+  /**
+   * Confirma la eliminación del empleado
+   */
+  confirmarEliminacion(): void {
+    if (!this.empleadoAEliminar) return;
+
+    this.empleadoService.deleteEmpleado(this.empleadoAEliminar).subscribe({
+      next: () => {
+        this.alertComponent.show(MESSAGES.SUCCESS.DELETE, 'success');
+        this.cargarEmpleados();
+        this.empleadoAEliminar = null;
+      },
+      error: (error) => {
+        this.alertComponent.show(MESSAGES.ERROR.DELETE, 'error');
+        console.error('Error al eliminar empleado:', error);
+        this.empleadoAEliminar = null;
+      }
+    });
+  }
+
+  /**
+   * Cancela la eliminación
+   */
+  cancelarEliminacion(): void {
+    this.empleadoAEliminar = null;
   }
 
   /**
@@ -134,6 +185,9 @@ export class EmpleadosCrud implements OnInit {
    */
   cancelarEdicion(): void {
     this.empleadoEditando = null;
-    this.formComponent.resetForm();
+    if (this.formComponent) {
+      this.formComponent.resetForm();
+    }
+    this.cdr.detectChanges();
   }
 }

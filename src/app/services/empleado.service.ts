@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Empleado, CreateEmpleadoDTO, UpdateEmpleadoDTO, ApiError } from '../models/empleado.interface';
@@ -13,6 +13,12 @@ import { API_CONFIG, HTTP_STATUS } from '../constants/app.constants';
 })
 export class EmpleadoService {
   private readonly baseUrl = API_CONFIG.BASE_URL;
+  private readonly httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    })
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -40,17 +46,19 @@ export class EmpleadoService {
    * Crea un nuevo empleado
    */
   createEmpleado(empleadoDTO: CreateEmpleadoDTO): Observable<Empleado> {
-    return this.http.post<Empleado>(`${this.baseUrl}${API_CONFIG.ENDPOINTS.EMPLEADOS}`, empleadoDTO)
+    console.log('Enviando al backend:', empleadoDTO);
+    console.log('URL:', `${this.baseUrl}${API_CONFIG.ENDPOINTS.EMPLEADOS}`);
+    console.log('Headers:', this.httpOptions.headers);
+
+    return this.http.post<Empleado>(`${this.baseUrl}${API_CONFIG.ENDPOINTS.EMPLEADOS}`, empleadoDTO, this.httpOptions)
       .pipe(
         catchError(error => this.handleError(error, 'Error al crear el empleado'))
       );
-  }
-
-  /**
+  }  /**
    * Actualiza un empleado existente
    */
   updateEmpleado(id: number, empleadoDTO: UpdateEmpleadoDTO): Observable<Empleado> {
-    return this.http.put<Empleado>(`${this.baseUrl}${API_CONFIG.ENDPOINTS.EMPLEADO_BY_ID(id)}`, empleadoDTO)
+    return this.http.put<Empleado>(`${this.baseUrl}${API_CONFIG.ENDPOINTS.EMPLEADO_BY_ID(id)}`, empleadoDTO, this.httpOptions)
       .pipe(
         catchError(error => this.handleError(error, 'Error al actualizar el empleado'))
       );

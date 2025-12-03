@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CreateEmpleadoDTO, UpdateEmpleadoDTO, Empleado } from '../../models/empleado.interface';
@@ -18,7 +18,7 @@ export class EmpleadoForm implements OnInit, OnChanges {
   empleadoForm!: FormGroup;
   readonly APP_CONSTANTS = APP_CONSTANTS;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -30,6 +30,7 @@ export class EmpleadoForm implements OnInit, OnChanges {
         this.cargarDatosEmpleado();
       } else {
         this.resetForm();
+        this.cdr.detectChanges();
       }
     }
   }
@@ -74,21 +75,33 @@ export class EmpleadoForm implements OnInit, OnChanges {
    * Resetea el formulario
    */
   resetForm(): void {
-    this.empleadoForm.reset();
-    this.empleadoForm.get('codEmpleado')?.enable();
+    if (this.empleadoForm) {
+      this.empleadoForm.reset();
+      this.empleadoForm.get('codEmpleado')?.enable();
+    }
   }
 
   /**
    * Maneja el envío del formulario
    */
   submitForm(): void {
+    // Marcar todos los campos como tocados
+    Object.keys(this.empleadoForm.controls).forEach(key => {
+      this.empleadoForm.get(key)?.markAsTouched();
+    });
+
     if (this.empleadoForm.valid) {
-      const formValue = this.empleadoForm.getRawValue(); // getRawValue incluye campos deshabilitados
+      const formValue = this.empleadoForm.getRawValue();
+      console.log('Datos del formulario:', formValue); // Debug
       this.onSubmit.emit(formValue);
     } else {
-      // Marcar todos los campos como tocados para mostrar errores
+      console.error('Formulario inválido:', this.empleadoForm.errors);
+      // Mostrar errores de cada campo
       Object.keys(this.empleadoForm.controls).forEach(key => {
-        this.empleadoForm.get(key)?.markAsTouched();
+        const control = this.empleadoForm.get(key);
+        if (control && control.invalid) {
+          console.error(`Campo ${key} inválido:`, control.errors);
+        }
       });
     }
   }

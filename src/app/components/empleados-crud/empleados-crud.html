@@ -23,4 +23,9 @@
       (onDelete)="eliminarEmpleado($event)">
     </app-empleado-tabla>
   }
+
+  <app-confirm-modal
+    (onConfirm)="confirmarEliminacion()"
+    (onCancel)="cancelarEliminacion()">
+  </app-confirm-modal>
 </div>
