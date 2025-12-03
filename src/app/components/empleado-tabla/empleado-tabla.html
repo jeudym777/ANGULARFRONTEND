@@ -1,0 +1,44 @@
+<div class="table-card">
+  <h2>📋 Lista de Empleados</h2>
+
+  @if (empleados.length === 0) {
+    <div class="loading">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+      <p>{{ MESSAGES.EMPTY.NO_EMPLEADOS }}</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Edad</th>
+            <th>Fecha Alta</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (empleado of empleados; track empleado.id) {
+            <tr>
+              <td data-label="Código"><strong>{{ empleado.codEmpleado }}</strong></td>
+              <td data-label="Nombre">{{ empleado.nombre }}</td>
+              <td data-label="Email">{{ empleado.email }}</td>
+              <td data-label="Edad">{{ empleado.edad }} años</td>
+              <td data-label="Fecha Alta">{{ formatearFecha(empleado.fechaAlta) }}</td>
+              <td data-label="Acciones" class="actions">
+                <button class="btn btn-primary btn-small" (click)="editarEmpleado(empleado.id)">
+                  ✏️ Editar
+                </button>
+                <button class="btn btn-danger btn-small" (click)="eliminarEmpleado(empleado.codEmpleado)">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

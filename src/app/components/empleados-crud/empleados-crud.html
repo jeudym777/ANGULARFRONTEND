@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="header">
+    <h1>Gestión de Empleados</h1>
+    <p>Sistema de Gestión de Empleados</p>
+  </div>
+
+  <app-alert></app-alert>
+
+  <app-empleado-form
+    [empleadoEditando]="empleadoEditando"
+    (onSubmit)="handleFormSubmit($event)"
+    (onCancel)="cancelarEdicion()">
+  </app-empleado-form>
+
+  @if (cargando) {
+    <div class="loading">
+      <p>{{ MESSAGES.EMPTY.LOADING }}</p>
+    </div>
+  } @else {
+    <app-empleado-tabla
+      [empleados]="empleados"
+      (onEdit)="editarEmpleado($event)"
+      (onDelete)="eliminarEmpleado($event)">
+    </app-empleado-tabla>
+  }
+</div>

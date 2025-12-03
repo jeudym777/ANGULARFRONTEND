@@ -1,0 +1,98 @@
+<div class="form-card">
+  <h2>
+    @if (isEditMode) {
+      ✏️ Editar Empleado
+    } @else {
+      ➕ Nuevo Empleado
+    }
+  </h2>
+
+  <form [formGroup]="empleadoForm" (ngSubmit)="submitForm()">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nombre">Nombre Completo *</label>
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
+          placeholder="Juan Pérez"
+          [class.error]="hasError('nombre', 'required') || hasError('nombre', 'minlength')">
+        @if (hasError('nombre', 'required')) {
+          <span class="error-message">El nombre es requerido</span>
+        }
+        @if (hasError('nombre', 'minlength')) {
+          <span class="error-message">El nombre debe tener al menos 3 caracteres</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="codEmpleado">Código *</label>
+        <input
+          type="text"
+          id="codEmpleado"
+          formControlName="codEmpleado"
+          placeholder="A001"
+          [maxlength]="APP_CONSTANTS.VALIDATION.COD_EMPLEADO_MAX_LENGTH"
+          [class.error]="hasError('codEmpleado', 'required') || hasError('codEmpleado', 'maxlength')">
+        @if (hasError('codEmpleado', 'required')) {
+          <span class="error-message">El código es requerido</span>
+        }
+        @if (hasError('codEmpleado', 'maxlength')) {
+          <span class="error-message">El código no puede exceder {{ APP_CONSTANTS.VALIDATION.COD_EMPLEADO_MAX_LENGTH }} caracteres</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="juan@empresa.com"
+          [class.error]="hasError('email', 'required') || hasError('email', 'email')">
+        @if (hasError('email', 'required')) {
+          <span class="error-message">El email es requerido</span>
+        }
+        @if (hasError('email', 'email')) {
+          <span class="error-message">El email no es válido</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="edad">Edad *</label>
+        <input
+          type="number"
+          id="edad"
+          formControlName="edad"
+          placeholder="30"
+          [min]="APP_CONSTANTS.VALIDATION.MIN_AGE"
+          [max]="APP_CONSTANTS.VALIDATION.MAX_AGE"
+          [class.error]="hasError('edad', 'required') || hasError('edad', 'min') || hasError('edad', 'max')">
+        @if (hasError('edad', 'required')) {
+          <span class="error-message">La edad es requerida</span>
+        }
+        @if (hasError('edad', 'min')) {
+          <span class="error-message">La edad mínima es {{ APP_CONSTANTS.VALIDATION.MIN_AGE }}</span>
+        }
+        @if (hasError('edad', 'max')) {
+          <span class="error-message">La edad máxima es {{ APP_CONSTANTS.VALIDATION.MAX_AGE }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      @if (isEditMode) {
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">
+          Cancelar
+        </button>
+      }
+      <button type="submit" [class]="isEditMode ? 'btn btn-primary' : 'btn btn-success'">
+        @if (isEditMode) {
+          💾 Actualizar Empleado
+        } @else {
+          ➕ Crear Empleado
+        }
+      </button>
+    </div>
+  </form>
+</div>
