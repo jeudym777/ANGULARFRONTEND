@@ -1,59 +1,176 @@
-# MiProyectoAngular
+# 🚀 Sistema de Gestión de Empleados - Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+Sistema CRUD completo de empleados desarrollado con **Angular 20**, con una interfaz moderna y responsive, conectado a un backend ASP.NET Core.
 
-## Development server
+## ✨ Características
 
-To start a local development server, run:
+- ✅ **CRUD Completo**: Crear, Leer, Actualizar y Eliminar empleados
+- ✅ **Formularios Reactivos**: Validación en tiempo real con Angular Reactive Forms
+- ✅ **Interfaz Moderna**: Diseño responsivo con gradientes y animaciones
+- ✅ **Notificaciones**: Alertas animadas de éxito/error
+- ✅ **Arquitectura Limpia**: Componentes reutilizables y servicios HTTP
+- ✅ **TypeScript**: Tipado fuerte para mayor seguridad
+- ✅ **Zoneless**: Aplicación sin zone.js para mejor rendimiento
+
+## 🛠️ Tecnologías
+
+- **Frontend**: Angular 20.3.10
+- **Lenguaje**: TypeScript
+- **Formularios**: Reactive Forms
+- **HTTP**: HttpClient
+- **Backend**: ASP.NET Core 9.0 (C#)
+- **Base de datos**: SQL Server
+- **ORM**: Dapper
+
+## 📋 Requisitos Previos
+
+- Node.js (v18 o superior)
+- Angular CLI (v20 o superior)
+- Backend ASP.NET Core corriendo en `http://localhost:5010`
+- SQL Server con tabla `Empleados`
+
+## 🔧 Instalación
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/jeudym777/ANGULARFRONTEND.git
+
+# Navegar al directorio
+cd ANGULARFRONTEND/mi-proyecto-angular
+
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+ng serve
+```
+
+La aplicación estará disponible en `http://localhost:4200/`
+
+## 📁 Estructura del Proyecto
+
+```
+src/app/
+├── components/
+│   ├── alert/                 # Componente de alertas
+│   ├── empleado-form/         # Formulario de empleado
+│   ├── empleado-tabla/        # Tabla de empleados
+│   └── empleados-crud/        # Componente principal CRUD
+├── constants/
+│   └── app.constants.ts       # Constantes y mensajes
+├── models/
+│   └── empleado.interface.ts  # Interfaces y DTOs
+├── services/
+│   └── empleado.service.ts    # Servicio HTTP
+└── app.ts                     # Componente raíz
+```
+
+## 🎯 Funcionalidades
+
+### Crear Empleado
+- Formulario con validación en tiempo real
+- Campos: Nombre, Código, Email, Edad
+- Validaciones personalizadas
+
+### Listar Empleados
+- Tabla responsive con diseño adaptable
+- Formato de fechas localizado
+- Acciones de editar y eliminar por empleado
+
+### Actualizar Empleado
+- Carga automática de datos en el formulario
+- Campo de código deshabilitado en edición
+- Actualización optimista con confirmación
+
+### Eliminar Empleado
+- Modal de confirmación
+- Eliminación con notificación de éxito
+
+## 🔌 API Endpoints
+
+- `GET /api/Empleados` - Obtener todos los empleados
+- `GET /api/Empleados/{codigo}` - Obtener empleado por código
+- `POST /api/Empleados` - Crear nuevo empleado
+- `PUT /api/Empleados/{id}` - Actualizar empleado
+- `DELETE /api/Empleados/{codigo}` - Eliminar empleado
+
+## 🎨 Características de la Interfaz
+
+- **Diseño Responsive**: Adaptable a móviles, tablets y desktop
+- **Gradientes Modernos**: Fondo con degradado púrpura
+- **Animaciones**: Transiciones suaves en interacciones
+- **Validación Visual**: Feedback inmediato en formularios
+- **Notificaciones Toast**: Alertas no intrusivas
+- **Tabla Responsiva**: Vista de cards en móviles
+
+## 📱 Responsive Design
+
+La aplicación se adapta perfectamente a diferentes tamaños de pantalla:
+
+- **Desktop**: Tabla completa con todas las columnas
+- **Tablet**: Grid de formulario optimizado
+- **Mobile**: Vista de cards para la tabla, formulario en columna única
+
+## 🚀 Comandos de Desarrollo
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
 ```bash
-ng generate component component-name
-```
+# Servidor de desarrollo
+ng serve
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+# Build de producción
 ng build
-```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
+# Ejecutar tests
 ng test
+
+# Lint
+ng lint
 ```
 
-## Running end-to-end tests
+## 🔐 Validaciones
 
-For end-to-end (e2e) testing, run:
+### Formulario de Empleado
+- **Nombre**: Requerido, mínimo 3 caracteres
+- **Código**: Requerido, máximo 4 caracteres
+- **Email**: Requerido, formato de email válido
+- **Edad**: Requerido, entre 16 y 100 años
 
-```bash
-ng e2e
-```
+## 🌟 Mejoras Futuras
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- [ ] Paginación de empleados
+- [ ] Búsqueda y filtros
+- [ ] Exportación a Excel/PDF
+- [ ] Autenticación y autorización
+- [ ] Modo oscuro
+- [ ] Internacionalización (i18n)
+- [ ] Tests unitarios y e2e
 
-## Additional Resources
+## 👤 Autor
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Jeudy Mejía**
+- GitHub: [@jeudym777](https://github.com/jeudym777)
+- Repositorio Backend: [EmpleadosBackend](https://github.com/jeudym777/EmpleadosBackend)
+- Repositorio Frontend Original: [EmpleadosFrontEnd](https://github.com/jeudym777/EmpleadosFrontEnd)
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT.
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+---
+
+⭐ Si te gustó este proyecto, ¡dale una estrella en GitHub!
+
